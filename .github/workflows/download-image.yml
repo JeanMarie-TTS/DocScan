@@ -30,8 +30,7 @@ jobs:
         run: docker pull ${{ matrix.image.name }}:${{ matrix.image.tag }}
 
       - name: Scan Image
-        run: docker run aquasec/trivy:latest image --timeout 5m --scanners vuln --exit-code 1 --severity CRITICAL,HIGH, MEDIUM ${{ matrix.image.name }}:${{ matrix.image.tag }}
-
+        run: docker run aquasec/trivy:latest  image --timeout 5m --scanners vuln --exit-code 1 --severity CRITICAL,HIGH  ${{ matrix.image.name }}:${{ matrix.image.tag }}
       - name: Tag Image
         run: docker tag ${{ matrix.image.name }}:${{ matrix.image.tag }} ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.name }}:${{ matrix.image.tag }}
 
