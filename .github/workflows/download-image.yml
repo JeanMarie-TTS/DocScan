@@ -16,10 +16,13 @@ jobs:
         image:
           - name: postgrest/postgrest
             tag: latest
+            vname: POSTGREST
           - name: swaggerapi/swagger-ui
             tag: latest
+            vname: swagger
           - name: clamav/clamav
             tag: latest
+            vname: clamav
 
     steps:
 
@@ -43,6 +46,17 @@ jobs:
 
       - name: Push Image
         run: docker push ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.name }}:${{ matrix.image.tag }}
+
+      - name: Update Repo var
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "${{ matrix.image.vname }}",
+              "value": "${{ matrix.image.name }}:${{ matrix.image.tag }}"
+            }' \
+            https://api.github.com/repos/JeanMarie-TTS/DocScan/actions/secrets/${{ matrix.image.vname }}
 
   docker-fetch:
     runs-on: ubuntu-latest
