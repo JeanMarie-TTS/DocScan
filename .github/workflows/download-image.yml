@@ -47,18 +47,23 @@ jobs:
       - name: Push Image
         run: docker push ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.name }}:${{ matrix.image.tag }}
 
-      - name: Update Repo var
+      - name: save version details
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "name": "${{ matrix.image.vname }}",
-              "value": "${{ matrix.image.name }}:${{ matrix.image.tag }}"
-            }' \
-            https://api.github.com/repos/JeanMarie-TTS/DocScan/actions/secrets/${{ matrix.image.vname }}
+          echo ${{ matrix.image.name }}:${{ matrix.image.tag }} >> versions.txt
+
+  save-version-info:
+    runs-on: ubuntu-latest
+    needs: docker-update
+    steps:
+      - name: Upload version details2
+        uses: actions/upload-artifact@v3
+        with:
+          name: versions
+          path: versions.txt.txt
+
 
   docker-fetch:
+
     runs-on: ubuntu-latest
     needs: docker-update
     env:
