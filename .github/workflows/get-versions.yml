@@ -7,12 +7,6 @@ on:
 jobs:
   get-image-versions:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image:
-          - tname: postgrest
-          - tname: swagger
-          - tname: clamav
 
     steps:
       - name: Checkout
@@ -21,14 +15,13 @@ jobs:
       - name: Fetch refresh token artifact
         uses: dawidd6/action-download-artifact@v2
         with:
-          name: ${{ matrix.image.tname }}
+          # name: ${{ matrix.image.tname }}
+          name: postgrest
 
       - name: Update env var
-        run:
-        env:
-          TF_VAR_${{ matrix.image.tname }}: $(cat ${{ matrix.image.tname }}.txt)
-      - name: Echo env var
-        run: echo $TF_VAR_${{ matrix.image.tname }}
-      
+        run: |
+          echo "TF_VAR_postgrest=$(cat postgrest.txt)" >> "$GITHUB_ENV"
 
-
+      - name: Show env var
+        run: |
+          env

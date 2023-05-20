@@ -71,8 +71,8 @@ jobs:
       - name: Tag Image
         run: |
           image_creation_date=$(date -d "$(docker inspect -f '{{ .Created }}' ${{ matrix.image.name }}:${{ matrix.image.tag }})" +%s)
-          docker tag ${{ matrix.image.name }}:${{ matrix.image.tag }} ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.name }}:${{ matrix.image.tag }}
-          docker tag ${{ matrix.image.name }}:${{ matrix.image.tag }} ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.name }}:$image_creation_date
+          docker tag ${{ matrix.image.name }}:${{ matrix.image.tag }} ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.tname }}:${{ matrix.image.tag }}
+          docker tag ${{ matrix.image.name }}:${{ matrix.image.tag }} ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.tname }}:$image_creation_date
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -82,7 +82,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push Image
-        run: docker push --all-tags ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.name }}
+        run: docker push --all-tags ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.tname }}
 
       
       - name: Upload refresh token
@@ -106,8 +106,17 @@ jobs:
       - name: Pull PostGREST Docker Image from fhcr
         run: docker pull ghcr.io/${{ env.GH_REPO }}/postgrest/postgrest:latest
 
-  job_3:
-    name: get-image-versions
-    uses: ./.github/workflows/get-versions.yml
-    needs: docker-update
+      
+
+  get-image-versions:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Pull PostGREST Docker Image from fhcr
+      uses: ./.github/workflows/get-versions.yml
+
+    - name: Dump env var
+      run: |
+        env
 
