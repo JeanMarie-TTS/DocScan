@@ -107,17 +107,7 @@ jobs:
         run: docker pull ghcr.io/${{ env.GH_REPO }}/postgrest/postgrest:latest
 
   job_3:
-    name: Display results
+    name: get-image-versions
+    uses: ./.github/workflows/get-versions.yml
     needs: docker-update
-    runs-on: macOS-latest
-    steps:
-      - name: Download artifact from uploads
-        uses: actions/download-artifact@v3
-        with:
-          name: postgrest
-      - name: Print the final result
-        shell: bash
-        run: |
-          value=`cat postgrest.txt`
-          echo The result is $value
 

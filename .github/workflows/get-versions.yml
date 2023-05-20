@@ -1,0 +1,34 @@
+---
+name: get image version
+on:
+  workflow_call:
+
+
+jobs:
+  get-image-versions:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+          - tname: postgrest
+          - tname: swagger
+          - tname: clamav
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fetch refresh token artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: ${{ matrix.image.tname }}
+
+      - name: Update env var
+        run:
+        env:
+          TF_VAR_${{ matrix.image.tname }}: $(cat ${{ matrix.image.tname }}.txt)
+      - name: Echo env var
+        run: echo $TF_VAR_${{ matrix.image.tname }}
+      
+
+
