@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - main
-env:
-  TF_VAR_postgrest: "TBD"
 
 
 jobs:
   get-image-versions:
     runs-on: ubuntu-latest
+    outputs:
+      postgrest: ${{ steps.read-postgres.outputs.TF_VAR_postgrest }}
+
 
     steps:
       - name: Checkout
@@ -23,14 +24,16 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: download-image.yml
 
-      - name: read token artifact
+      - name: read postgrest version
+        id: read-postgres
         run: |
           echo "TF_VAR_postgrest=$(cat postgrest.txt)"
-          echo "TF_VAR_postgrest=$(cat postgrest.txt)" >> "$GITHUB_ENV"
+          echo "TF_VAR_postgrest=$(cat postgrest.txt)" >> "$GITHUB_OUTPUT"
 
   deploy_infra:
     name: Deploy infrastructure (dev)
+    needs: get-image-versions
     uses: ./.github/workflows/terraform-apply-env.yml
     with:
       environment: "dev"
-      TF_VAR_postgrest: $TF_VAR_postgrest
+      TF_VAR_postgrest: ${{ needs.get-image-versions.outputs.postgrest }}
