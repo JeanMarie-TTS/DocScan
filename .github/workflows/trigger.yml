@@ -1,0 +1,36 @@
+---
+name: get image version
+on:
+  push:
+    branches:
+      - main
+env:
+  TF_VAR_postgrest: "TBD"
+
+
+jobs:
+  get-image-versions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fetch refresh token artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: postgrest
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: download-image.yml
+
+      - name: read token artifact
+        run: |
+          echo "TF_VAR_postgrest=$(cat postgrest.txt)"
+          echo "TF_VAR_postgrest=$(cat postgrest.txt)" >> "$GITHUB_ENV"
+
+  deploy_infra:
+    name: Deploy infrastructure (dev)
+    uses: ./.github/workflows/terraform-apply-env.yml
+    with:
+      environment: "dev"
+      TF_VAR_postgrest: $TF_VAR_postgrest

@@ -107,16 +107,3 @@ jobs:
         run: docker pull ghcr.io/${{ env.GH_REPO }}/postgrest/postgrest:latest
 
       
-
-  get-image-versions:
-    runs-on: ubuntu-latest
-
-    steps:
-
-    - name: Pull PostGREST Docker Image from fhcr
-      uses: ./.github/workflows/get-versions.yml
-
-    - name: Dump env var
-      run: |
-        env
-
