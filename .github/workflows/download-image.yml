@@ -19,7 +19,7 @@ jobs:
             tname: postgrest
           - name: swaggerapi/swagger-ui:latest
             tname: swagger
-          - name: clamav/clamav:latest
+          - name: ghcr.io/gsa-tts/clamav-rest/clamav:latest
             tname: clamav
 
     steps:
@@ -68,7 +68,7 @@ jobs:
       - name: Tag Image
         run: |
           image_creation_date=$(date -d "$(docker inspect -f '{{ .Created }}' ${{ matrix.image.name }})" +%s)
-          docker tag ${{ matrix.image.name }} ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.tname }}:latest}
+          docker tag ${{ matrix.image.name }} ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.tname }}:latest
           docker tag ${{ matrix.image.name }} ghcr.io/${{ env.GH_REPO }}/${{ matrix.image.tname }}:$image_creation_date
 
       - name: Login to GitHub Container Registry
